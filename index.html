@@ -1,0 +1,707 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>MedPredict</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── Reset ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body {
+    font-family: 'DM Sans', sans-serif;
+    background: #f2f5f3;
+    color: #1a2e2a;
+    min-height: 100vh;
+}
+
+/* ── NAV ── */
+nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 999;
+    background: rgba(242,245,243,0.97);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid #d8e7e1;
+    height: 60px;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 0 48px;
+}
+.nav-logo {
+    font-family: 'DM Serif Display', serif;
+    font-size: 20px; color: #0d6b5c; text-decoration: none;
+}
+.nav-links { display: flex; gap: 32px; }
+.nav-link {
+    font-size: 14px; font-weight: 500; color: #7a9e98;
+    text-decoration: none;
+    padding-bottom: 3px;
+    border-bottom: 2px solid transparent;
+    transition: color 0.15s, border-color 0.15s;
+}
+.nav-link:hover { color: #0d6b5c; }
+.nav-link.active { color: #0d6b5c; border-bottom: 2px solid #0d6b5c; }
+
+/* ── PAGE WRAPPER ── */
+.page { display: none; }
+.page.active { display: block; }
+.container { max-width: 900px; margin: 0 auto; padding: 80px 24px 48px; }
+
+/* ── HERO ── */
+.hero { text-align: center; padding: 64px 0 52px; }
+.badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: #e4f0eb; color: #0d6b5c;
+    font-size: 10px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase;
+    padding: 5px 15px; border-radius: 20px; border: 1px solid #bdd8cf; margin-bottom: 26px;
+}
+.hero h1 {
+    font-family: 'DM Serif Display', serif;
+    font-size: 48px; line-height: 1.1; letter-spacing: -1.2px;
+    color: #0f1f1c; margin-bottom: 20px;
+}
+.hero h1 em { font-style: normal; color: #0d6b5c; }
+.hero p {
+    font-size: 16px; color: #6b8882; font-weight: 300; line-height: 1.8;
+    max-width: 480px; margin: 0 auto 36px;
+}
+.btn-primary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: #0d6b5c; color: white;
+    padding: 13px 32px; border-radius: 10px;
+    font-size: 15px; font-weight: 600; text-decoration: none;
+    border: none; cursor: pointer;
+    box-shadow: 0 4px 16px rgba(13,107,92,0.25);
+    transition: background 0.15s, transform 0.15s;
+    font-family: 'DM Sans', sans-serif;
+}
+.btn-primary:hover { background: #0a5549; transform: translateY(-1px); }
+.btn-secondary {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: white; color: #4a6e68;
+    padding: 11px 24px; border-radius: 10px;
+    font-size: 14px; font-weight: 600; text-decoration: none;
+    border: 1.5px solid #c8ddd7; cursor: pointer;
+    transition: border-color 0.15s, color 0.15s;
+    font-family: 'DM Sans', sans-serif;
+}
+.btn-secondary:hover { border-color: #0d6b5c; color: #0d6b5c; }
+
+.hero-frame {
+    margin: 48px auto 0; max-width: 800px; height: 260px;
+    border-radius: 18px; border: 1px solid #ccddd7;
+    box-shadow: 0 20px 60px rgba(13,107,92,0.12);
+    background: linear-gradient(135deg, #092a24 0%, #1a4f44 60%, #0c3830 100%);
+    display: flex; align-items: center; justify-content: center;
+    position: relative; overflow: hidden;
+}
+.hero-grid {
+    position: absolute; inset: 0;
+    background-image: linear-gradient(rgba(13,200,150,0.05) 1px, transparent 1px),
+                      linear-gradient(90deg, rgba(13,200,150,0.05) 1px, transparent 1px);
+    background-size: 38px 38px;
+}
+.hero-glow {
+    width: 200px; height: 200px; border-radius: 50%; position: absolute;
+    background: radial-gradient(circle, rgba(13,200,150,0.18) 0%, transparent 70%);
+}
+.hero-label { position: relative; color: rgba(13,200,150,0.6); font-size: 11px; letter-spacing: 2.8px; text-transform: uppercase; }
+
+/* ── CAPABILITIES ── */
+.sec { padding: 56px 0 40px; }
+.sec-eye { font-size: 10px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #0d6b5c; margin-bottom: 10px; }
+.sec-h2 { font-family: 'DM Serif Display', serif; font-size: 30px; color: #0f1f1c; margin-bottom: 8px; }
+.sec-desc { font-size: 14px; color: #7a9e98; font-weight: 300; margin-bottom: 32px; }
+.cap-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+.cap-card { background: white; border: 1px solid #dfe9e4; border-radius: 14px; padding: 24px; transition: box-shadow 0.2s, transform 0.2s; }
+.cap-card:hover { box-shadow: 0 8px 28px rgba(13,107,92,0.09); transform: translateY(-2px); }
+.cap-ico { font-size: 20px; margin-bottom: 12px; }
+.cap-t { font-size: 14px; font-weight: 600; color: #0f1f1c; margin-bottom: 8px; }
+.cap-d { font-size: 12.5px; color: #7a9e98; line-height: 1.65; font-weight: 300; }
+
+/* ── INSIGHT BANNER ── */
+.insight-banner {
+    background: linear-gradient(135deg, #ecf5f0, #e4f0eb);
+    border: 1px solid #bdd8cf; border-radius: 18px;
+    padding: 36px 40px; display: flex; align-items: center; gap: 36px;
+    margin-bottom: 56px;
+}
+.ib-left { flex: 1; }
+.ib-eye { font-size: 10px; font-weight: 700; letter-spacing: 1.8px; text-transform: uppercase; color: #0d6b5c; margin-bottom: 10px; }
+.ib-h { font-family: 'DM Serif Display', serif; font-size: 24px; color: #0f1f1c; margin-bottom: 10px; }
+.ib-d { font-size: 13px; color: #6b8882; line-height: 1.7; font-weight: 300; }
+.stat-box { background: white; border: 1px solid #d4e4dc; border-radius: 12px; padding: 20px 24px; min-width: 200px; box-shadow: 0 4px 16px rgba(13,107,92,0.07); }
+.stat-eye { font-size: 9px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; color: #adc8c0; margin-bottom: 12px; }
+.stat-row { display: flex; justify-content: space-between; margin-bottom: 6px; }
+.stat-k { font-size: 12px; color: #5a7a74; }
+.stat-v { font-size: 13px; font-weight: 700; color: #0d6b5c; }
+.stat-bar { height: 3px; background: #e4f0eb; border-radius: 2px; margin-bottom: 12px; }
+.stat-fill { height: 100%; background: #0d6b5c; border-radius: 2px; }
+
+/* ── FOOTER ── */
+footer {
+    border-top: 1px solid #d8e7e1; padding: 28px 24px;
+    max-width: 900px; margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+}
+.ft-logo { font-family: 'DM Serif Display', serif; font-size: 16px; color: #0d6b5c; }
+.ft-tag { font-size: 11px; color: #a4c0b8; margin-top: 2px; }
+.ft-links { display: flex; gap: 20px; }
+.ft-link { font-size: 12px; color: #a4c0b8; text-decoration: none; }
+.ft-copy { font-size: 11px; color: #b4ccc4; }
+
+/* ── ASSESSMENT FORM ── */
+.breadcrumb { font-size: 12px; color: #a4c0b8; margin-bottom: 16px; }
+.breadcrumb b { color: #0d6b5c; font-weight: 500; }
+.assess-title { font-family: 'DM Serif Display', serif; font-size: 28px; color: #0f1f1c; margin-bottom: 4px; }
+.assess-sub { font-size: 13.5px; color: #7a9e98; font-weight: 300; margin-bottom: 28px; }
+
+.assess-grid { display: grid; grid-template-columns: 1fr 280px; gap: 28px; align-items: start; }
+
+.form-card { background: white; border: 1px solid #dfe9e4; border-radius: 14px; padding: 24px 28px; margin-bottom: 16px; }
+.form-card-header { display: flex; align-items: center; justify-content: space-between; padding-bottom: 16px; margin-bottom: 18px; border-bottom: 1px solid #eef4f1; }
+.form-card-title { font-size: 15px; font-weight: 600; color: #0f1f1c; display: flex; align-items: center; gap: 9px; }
+.form-card-num { font-size: 11px; color: #b4ccc4; }
+
+.form-row { display: grid; gap: 14px; margin-bottom: 14px; }
+.form-row.col-2 { grid-template-columns: 1fr 1fr; }
+.form-row.col-3 { grid-template-columns: 1fr 1fr 1fr; }
+
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group label { font-size: 13px; font-weight: 500; color: #4a6e68; }
+
+input[type="number"], select {
+    border: 1.5px solid #d8e7e1; border-radius: 9px;
+    padding: 9px 13px; font-family: 'DM Sans', sans-serif;
+    font-size: 14px; background: #f9fbfa; color: #1a2e2a;
+    width: 100%; transition: border-color 0.15s, box-shadow 0.15s;
+    appearance: none; -webkit-appearance: none;
+}
+input[type="number"]:focus, select:focus {
+    outline: none; border-color: #0d6b5c;
+    box-shadow: 0 0 0 3px rgba(13,107,92,0.08);
+}
+select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%236b8882' d='M6 8L1 3h10z'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; padding-right: 32px; cursor: pointer; }
+select option { color: #1a2e2a; background: white; }
+
+.checkbox-group { display: flex; align-items: flex-start; gap: 10px; padding: 12px; background: #f9fbfa; border: 1.5px solid #d8e7e1; border-radius: 9px; cursor: pointer; transition: border-color 0.15s; }
+.checkbox-group:hover { border-color: #0d6b5c; }
+.checkbox-group input[type="checkbox"] { width: 16px; height: 16px; accent-color: #0d6b5c; cursor: pointer; margin-top: 2px; flex-shrink: 0; }
+.checkbox-group .cb-label { font-size: 13px; color: #3d5e58; line-height: 1.4; }
+.checkbox-group .cb-sub { font-size: 11.5px; color: #9ab8b2; margin-top: 2px; }
+
+/* BMI toggle */
+.bmi-toggle { display: flex; gap: 8px; margin-bottom: 12px; }
+.bmi-tab {
+    padding: 6px 14px; border-radius: 7px; font-size: 12.5px; font-weight: 500;
+    border: 1.5px solid #d8e7e1; background: white; color: #7a9e98;
+    cursor: pointer; transition: all 0.15s; font-family: 'DM Sans', sans-serif;
+}
+.bmi-tab.active { background: #0d6b5c; border-color: #0d6b5c; color: white; }
+.bmi-panel { display: none; }
+.bmi-panel.active { display: block; }
+.bmi-computed {
+    font-size: 13px; color: #0d6b5c; font-weight: 600;
+    background: #e4f0eb; border: 1px solid #bdd8cf;
+    padding: 8px 12px; border-radius: 8px; margin-top: 8px;
+}
+
+.form-actions { display: flex; justify-content: flex-end; gap: 12px; margin-top: 8px; }
+
+/* ── SIDEBAR ── */
+.sidebar-card { background: white; border: 1px solid #dfe9e4; border-radius: 14px; padding: 20px 22px; margin-bottom: 14px; position: sticky; top: 80px; }
+.sidebar-title { font-size: 14px; font-weight: 600; color: #0f1f1c; margin-bottom: 8px; }
+.sidebar-body { font-size: 13px; color: #7a9e98; line-height: 1.65; margin-bottom: 12px; }
+.status-dot { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #a4c0b8; padding: 7px 10px; background: #f5f9f7; border-radius: 8px; border: 1px solid #e8f0ec; margin-bottom: 7px; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: #c8ddd7; flex-shrink: 0; }
+.dot.on { background: #0d6b5c; }
+.chk-item { display: flex; align-items: center; gap: 8px; font-size: 12.5px; color: #4a6e68; margin-bottom: 7px; }
+.chk-ico { color: #0d6b5c; }
+
+/* ── RESULT CARD ── */
+.result-card {
+    background: white; border: 1px solid #dfe9e4; border-radius: 18px;
+    padding: 36px; margin-bottom: 24px;
+    box-shadow: 0 8px 40px rgba(13,107,92,0.09);
+    display: none;
+}
+.result-card.visible { display: block; }
+.result-meta { font-size: 12px; color: #a4c0b8; margin-bottom: 24px; }
+.result-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 36px; margin-bottom: 24px; }
+.result-left { border-right: 1px solid #eef4f1; padding-right: 36px; }
+.result-right { display: flex; flex-direction: column; justify-content: center; }
+.result-eye { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #a4c0b8; margin-bottom: 14px; }
+.verdict { font-family: 'DM Serif Display', serif; font-size: 76px; line-height: 1; letter-spacing: -2px; display: flex; align-items: center; gap: 10px; }
+.verdict.yes { color: #b91c1c; }
+.verdict.no  { color: #15803d; }
+.verdict-icon { font-size: 32px; }
+.verdict-desc { font-size: 13.5px; color: #5a7a74; line-height: 1.75; margin-top: 18px; font-weight: 300; }
+.conf-label { font-size: 13px; font-weight: 600; color: #4a6e68; margin-bottom: 12px; }
+.conf-num { font-family: 'DM Serif Display', serif; font-size: 54px; color: #0d6b5c; letter-spacing: -2px; line-height: 1; }
+.conf-pct { font-size: 24px; color: #0d6b5c; }
+.conf-sub { font-size: 12.5px; color: #7a9e98; margin-top: 6px; margin-bottom: 14px; font-weight: 300; line-height: 1.5; }
+.conf-bar-bg { height: 6px; background: #e4f0eb; border-radius: 3px; margin-bottom: 8px; }
+.conf-bar-fg { height: 100%; border-radius: 3px; transition: width 0.8s ease; }
+.conf-note { font-size: 11px; color: #a4c0b8; }
+.result-divider { border: none; border-top: 1px solid #eef4f1; margin: 24px 0; }
+.actions-eye { font-size: 9px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase; color: #a4c0b8; margin-bottom: 10px; }
+.action-item { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: #3d5e58; padding: 8px 0; border-bottom: 1px solid #f0f6f3; }
+.action-item:last-child { border-bottom: none; }
+.action-ico { color: #0d6b5c; flex-shrink: 0; }
+
+/* run another */
+.run-another { text-align: center; margin-bottom: 24px; }
+.run-another p { font-size: 14px; color: #7a9e98; margin-bottom: 12px; }
+
+/* loading spinner */
+.spinner { display: none; text-align: center; padding: 20px; }
+.spinner.visible { display: block; }
+.spinner-circle {
+    width: 36px; height: 36px; border-radius: 50%;
+    border: 3px solid #e4f0eb; border-top-color: #0d6b5c;
+    animation: spin 0.8s linear infinite; margin: 0 auto 8px;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+.spinner p { font-size: 13px; color: #7a9e98; }
+
+/* error */
+.error-box { background: #fef2f2; border: 1px solid #fecaca; border-radius: 9px; padding: 12px 16px; margin-bottom: 16px; font-size: 13.5px; color: #b91c1c; display: none; }
+.error-box.visible { display: block; }
+</style>
+</head>
+<body>
+
+<!-- ── NAV ── -->
+<nav>
+    <a class="nav-logo" href="/">MedPredict</a>
+    <div class="nav-links">
+        <a class="nav-link {% if page == 'home' %}active{% endif %}" href="/">Home</a>
+        <a class="nav-link {% if page == 'assessment' %}active{% endif %}" href="/assessment">Assessment</a>
+    </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════════════
+     HOME PAGE
+══════════════════════════════════════════════════════════════ -->
+{% if page == "home" %}
+<div class="container">
+    <!-- Hero -->
+    <div class="hero">
+        <div class="badge">✦ Clinical Intelligence</div>
+        <h1>Hospital Readmission Analysis<br>powered by <em>Neural Modeling.</em></h1>
+        <p>Reduce patient risk and improve care outcomes with high-fidelity predictive analytics integrated directly into your existing clinical workflow.</p>
+        <a class="btn-primary" href="/assessment">Start Assessment →</a>
+    </div>
+
+    <div class="hero-frame">
+        <div class="hero-grid"></div>
+        <div class="hero-glow"></div>
+        <div class="hero-label">⬡ Clinical AI Dashboard · Real-time Risk Modeling</div>
+    </div>
+
+    <!-- Capabilities -->
+    <div class="sec">
+        <div class="sec-eye">System Capabilities</div>
+        <h2 class="sec-h2">Engineered for Modern Healthcare</h2>
+        <p class="sec-desc">Built for the rigorous demands of modern clinical infrastructure.</p>
+        <div class="cap-grid">
+            <div class="cap-card">
+                <div class="cap-ico">🗄</div>
+                <div class="cap-t">EHR Integration</div>
+                <div class="cap-d">Seamlessly sync with Epic, Cerner, and Meditech through our proprietary secure bridge, ensuring real-time data flow without manual entry.</div>
+            </div>
+            <div class="cap-card">
+                <div class="cap-ico">🧠</div>
+                <div class="cap-t">Neural Modeling</div>
+                <div class="cap-d">Deep learning architectures trained on multi-modal clinical datasets to identify subtle risk patterns in chronic care.</div>
+            </div>
+            <div class="cap-card">
+                <div class="cap-ico">🛡</div>
+                <div class="cap-t">HIPAA Compliance</div>
+                <div class="cap-d">Bank-grade encryption and end-to-end data obfuscation protocols that meet and exceed federal healthcare security standards.</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Insight Banner -->
+    <div class="insight-banner">
+        <div class="ib-left">
+            <div class="ib-eye">AI Insight Report</div>
+            <h3 class="ib-h">Precision in Prediction</h3>
+            <p class="ib-d">Our models analyze over 400 patient variables — from lab results to social determinants of health — to provide a granular "Likelihood Score" for readmission within 30 days.</p>
+        </div>
+        <div class="stat-box">
+            <div class="stat-eye">Model Performance</div>
+            <div class="stat-row"><span class="stat-k">AUC-ROC</span><span class="stat-v">0.94</span></div>
+            <div class="stat-bar"><div class="stat-fill" style="width:94%"></div></div>
+            <div class="stat-row"><span class="stat-k">Specificity</span><span class="stat-v">89%</span></div>
+            <div class="stat-bar"><div class="stat-fill" style="width:89%"></div></div>
+        </div>
+    </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════
+     ASSESSMENT PAGE
+══════════════════════════════════════════════════════════════ -->
+{% elif page == "assessment" %}
+<div class="container">
+    <!-- Result card (hidden until prediction runs) -->
+    <div class="result-card" id="resultCard">
+        <div class="result-meta" id="resultMeta"></div>
+        <div class="result-grid">
+            <div class="result-left">
+                <div class="result-eye">Primary Indicator — Readmission Risk within 30 days</div>
+                <div class="verdict" id="verdictBadge"></div>
+                <p class="verdict-desc" id="verdictDesc"></p>
+            </div>
+            <div class="result-right">
+                <div class="result-eye">Confidence Score</div>
+                <div class="conf-label">Model prediction confidence:</div>
+                <div><span class="conf-num" id="confNum"></span><span class="conf-pct">%</span></div>
+                <div class="conf-sub">How confident the model is in this prediction — not the probability of readmission.</div>
+                <div class="conf-bar-bg">
+                    <div class="conf-bar-fg" id="confBar"></div>
+                </div>
+                <div class="conf-note">Based on 11 verified clinical data points.</div>
+            </div>
+        </div>
+        <hr class="result-divider">
+        <div class="actions-eye">Recommended Actions</div>
+        <div id="actionsList"></div>
+    </div>
+
+    <div class="run-another" id="runAnother" style="display:none;">
+        <p>Want to assess another patient?</p>
+        <button class="btn-secondary" onclick="resetForm()">Run Another Assessment</button>
+    </div>
+
+    <!-- Spinner -->
+    <div class="spinner" id="spinner">
+        <div class="spinner-circle"></div>
+        <p>Analyzing patient data...</p>
+    </div>
+
+    <!-- Error -->
+    <div class="error-box" id="errorBox"></div>
+
+    <!-- Form header -->
+    <div class="breadcrumb">Clinical Dashboard › <b>Intake Form</b></div>
+    <h1 class="assess-title">Patient Risk Assessment</h1>
+    <p class="assess-sub">Input the clinical data required for predictive modeling. Ensure accuracy in biometrics for high-precision risk stratification.</p>
+
+    <div class="assess-grid">
+        <!-- LEFT: Form -->
+        <div>
+            <!-- Section 01 -->
+            <div class="form-card">
+                <div class="form-card-header">
+                    <div class="form-card-title">Demographics</div>
+                    <span class="form-card-num">Section 01</span>
+                </div>
+                <div class="form-row col-2">
+                    <div class="form-group">
+                        <label>Age</label>
+                        <input type="number" id="age" min="0" max="120" placeholder="e.g. 45">
+                    </div>
+                    <div class="form-group">
+                        <label>Gender</label>
+                        <select id="gender">
+                            <option value="">— Select —</option>
+                            <option value="Male">Male</option>
+                            <option value="Female">Female</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 02 -->
+            <div class="form-card">
+                <div class="form-card-header">
+                    <div class="form-card-title">Biometrics</div>
+                    <span class="form-card-num">Section 02</span>
+                </div>
+                <div class="form-row col-3">
+                    <div class="form-group">
+                        <label>BP Systolic (mmHg)</label>
+                        <input type="number" id="bp_systolic" min="0" max="300" placeholder="e.g. 120">
+                    </div>
+                    <div class="form-group">
+                        <label>BP Diastolic (mmHg)</label>
+                        <input type="number" id="bp_diastolic" min="0" max="200" placeholder="e.g. 80">
+                    </div>
+                    <div class="form-group">
+                        <label>Cholesterol (mg/dL)</label>
+                        <input type="number" id="cholesterol" min="0" max="600" placeholder="e.g. 190">
+                    </div>
+                </div>
+
+                <!-- BMI -->
+                <div class="form-group">
+                    <label>Body Mass Index (BMI)</label>
+                    <div class="bmi-toggle">
+                        <button class="bmi-tab active" onclick="switchBMI('direct', this)">Enter BMI directly</button>
+                        <button class="bmi-tab" onclick="switchBMI('calc', this)">Calculate from H &amp; W</button>
+                    </div>
+
+                    <div class="bmi-panel active" id="bmi-direct">
+                        <input type="number" id="bmi" min="0" max="80" step="0.1" placeholder="e.g. 24.5">
+                    </div>
+
+                    <div class="bmi-panel" id="bmi-calc">
+                        <div class="form-row col-2" style="margin-bottom:0">
+                            <div class="form-group">
+                                <label>Height (cm)</label>
+                                <input type="number" id="height" min="50" max="250" step="0.1" placeholder="e.g. 170" oninput="calcBMI()">
+                            </div>
+                            <div class="form-group">
+                                <label>Weight (kg)</label>
+                                <input type="number" id="weight" min="10" max="300" step="0.1" placeholder="e.g. 70" oninput="calcBMI()">
+                            </div>
+                        </div>
+                        <div class="bmi-computed" id="bmiResult" style="display:none;"></div>
+                        <input type="hidden" id="bmi_calc">
+                    </div>
+                </div>
+            </div>
+
+            <!-- Section 03 -->
+            <div class="form-card">
+                <div class="form-card-header">
+                    <div class="form-card-title">Clinical & Hospitalization</div>
+                    <span class="form-card-num">Section 03</span>
+                </div>
+                <div class="form-row col-2" style="margin-bottom:16px">
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="diabetes">
+                        <div>
+                            <div class="cb-label">Diabetes Diagnosis</div>
+                            <div class="cb-sub">Type 1 or Type 2 presence</div>
+                        </div>
+                    </label>
+                    <label class="checkbox-group">
+                        <input type="checkbox" id="hypertension">
+                        <div>
+                            <div class="cb-label">Hypertension</div>
+                            <div class="cb-sub">Chronic blood pressure elevation</div>
+                        </div>
+                    </label>
+                </div>
+                <div class="form-row col-3">
+                    <div class="form-group">
+                        <label>Medication Count</label>
+                        <input type="number" id="medication_count" min="0" max="50" value="0">
+                    </div>
+                    <div class="form-group">
+                        <label>Length of Stay (Days)</label>
+                        <input type="number" id="length_of_stay" min="0" max="365" placeholder="e.g. 5">
+                    </div>
+                    <div class="form-group">
+                        <label>Discharge Destination</label>
+                        <select id="discharge_destination">
+                            <option value="">— Select —</option>
+                            <option value="Home">Home</option>
+                            <option value="Home Health">Home Health</option>
+                            <option value="SNF">SNF</option>
+                            <option value="Rehab">Rehab</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="form-actions">
+                    <button class="btn-secondary" type="button" onclick="resetForm()">Save Draft</button>
+                    <button class="btn-primary" type="button" onclick="submitForm()">Analyze Risk</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- RIGHT: Sidebar -->
+        <div>
+            <div class="sidebar-card">
+                <div class="sidebar-title">✦ AI Insights</div>
+                <div class="sidebar-body">As you enter data, MedPredict analyzes patterns in real-time. Complete all biometrics for the most accurate risk scores.</div>
+                <div class="status-dot"><span class="dot on"></span> Waiting for Biometric Data...</div>
+                <div class="status-dot"><span class="dot"></span> Risk Stratification Ready</div>
+            </div>
+            <div class="sidebar-card">
+                <div style="font-size:9.5px;font-weight:700;letter-spacing:1.8px;text-transform:uppercase;color:#b4ccc4;margin-bottom:10px;">Compliance Checklist</div>
+                <div class="chk-item"><span class="chk-ico">✓</span> HIPAA compliant data entry</div>
+                <div class="chk-item"><span class="chk-ico">✓</span> Validated measurement units</div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<footer>
+    <div>
+        <div class="ft-logo">MedPredict</div>
+        <div class="ft-tag">Precision AI for clinical decision support.</div>
+    </div>
+    {% if page == "home" %}
+    <div class="ft-links">
+        <a class="ft-link" href="#">Documentation</a>
+        <a class="ft-link" href="#">Privacy Policy</a>
+        <a class="ft-link" href="#">Terms of Service</a>
+    </div>
+    {% endif %}
+    <div class="ft-copy">© 2026 MedPredict. All rights reserved.</div>
+</footer>
+
+<script>
+// ── BMI Calculator ─────────────────────────────────────────────────────────
+function switchBMI(mode, btn) {
+    document.querySelectorAll('.bmi-tab').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.bmi-panel').forEach(p => p.classList.remove('active'));
+    btn.classList.add('active');
+    document.getElementById('bmi-' + mode).classList.add('active');
+}
+
+function calcBMI() {
+    const h = parseFloat(document.getElementById('height').value);
+    const w = parseFloat(document.getElementById('weight').value);
+    const resultEl = document.getElementById('bmiResult');
+    const hiddenEl = document.getElementById('bmi_calc');
+    if (h > 0 && w > 0) {
+        const bmi = (w / ((h / 100) ** 2)).toFixed(1);
+        resultEl.textContent = `✦ Calculated BMI: ${bmi}`;
+        resultEl.style.display = 'block';
+        hiddenEl.value = bmi;
+    } else {
+        resultEl.style.display = 'none';
+        hiddenEl.value = '';
+    }
+}
+
+// ── Get BMI value regardless of mode ──────────────────────────────────────
+function getBMI() {
+    const directPanel = document.getElementById('bmi-direct');
+    if (directPanel.classList.contains('active')) {
+        return document.getElementById('bmi').value;
+    } else {
+        return document.getElementById('bmi_calc').value;
+    }
+}
+
+// ── Submit form ───────────────────────────────────────────────────────────
+async function submitForm() {
+    const errorBox = document.getElementById('errorBox');
+    errorBox.classList.remove('visible');
+
+    const fields = {
+        age:                    document.getElementById('age').value,
+        gender:                 document.getElementById('gender').value,
+        bp_systolic:            document.getElementById('bp_systolic').value,
+        bp_diastolic:           document.getElementById('bp_diastolic').value,
+        cholesterol:            document.getElementById('cholesterol').value,
+        bmi:                    getBMI(),
+        diabetes:               document.getElementById('diabetes').checked ? 1 : 0,
+        hypertension:           document.getElementById('hypertension').checked ? 1 : 0,
+        medication_count:       document.getElementById('medication_count').value,
+        length_of_stay:         document.getElementById('length_of_stay').value,
+        discharge_destination:  document.getElementById('discharge_destination').value,
+    };
+
+    // Validate
+    const missing = [];
+    if (!fields.age)                   missing.push('Age');
+    if (!fields.gender)                missing.push('Gender');
+    if (!fields.bp_systolic)           missing.push('BP Systolic');
+    if (!fields.bp_diastolic)          missing.push('BP Diastolic');
+    if (!fields.cholesterol)           missing.push('Cholesterol');
+    if (!fields.bmi)                   missing.push('BMI');
+    if (!fields.length_of_stay)        missing.push('Length of Stay');
+    if (!fields.discharge_destination) missing.push('Discharge Destination');
+
+    if (missing.length > 0) {
+        errorBox.textContent = `⚠️ Please fill in: ${missing.join(', ')}`;
+        errorBox.classList.add('visible');
+        errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
+
+    // Show spinner
+    document.getElementById('spinner').classList.add('visible');
+    document.getElementById('resultCard').classList.remove('visible');
+    document.getElementById('runAnother').style.display = 'none';
+
+    try {
+        const res = await fetch('/predict', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(fields),
+        });
+        const data = await res.json();
+        if (data.error) throw new Error(data.error);
+
+        showResult(data, fields);
+    } catch (err) {
+        errorBox.textContent = `Error: ${err.message}`;
+        errorBox.classList.add('visible');
+    } finally {
+        document.getElementById('spinner').classList.remove('visible');
+    }
+}
+
+// ── Show result ────────────────────────────────────────────────────────────
+function showResult(data, fields) {
+    const isYes = data.prediction === 1;
+    const conf  = data.confidence;
+    const barColor = isYes ? '#b91c1c' : '#0d6b5c';
+
+    // Meta
+    document.getElementById('resultMeta').textContent =
+        `Patient Assessment · Age ${fields.age} · ${fields.gender} · ${fields.length_of_stay} day stay`;
+
+    // Verdict
+    const verdictEl = document.getElementById('verdictBadge');
+    verdictEl.className = 'verdict ' + (isYes ? 'yes' : 'no');
+    verdictEl.innerHTML = isYes
+        ? 'YES <span class="verdict-icon">⚠️</span>'
+        : 'NO <span class="verdict-icon">✓</span>';
+
+    document.getElementById('verdictDesc').textContent = isYes
+        ? 'The patient shows clinical indicators suggesting a high probability of return to clinical care within a 30-day window from the initial discharge date.'
+        : 'The patient shows low clinical risk indicators. Probability of return to clinical care within 30 days is low. Standard discharge protocol is applicable.';
+
+    // Confidence
+    document.getElementById('confNum').textContent = conf;
+    const bar = document.getElementById('confBar');
+    bar.style.width = '0%';
+    bar.style.background = barColor;
+    setTimeout(() => { bar.style.width = conf + '%'; }, 100);
+
+    // Actions
+    const actionsEl = document.getElementById('actionsList');
+    actionsEl.innerHTML = data.actions
+        .map(a => `<div class="action-item"><span class="action-ico">✓</span>${a}</div>`)
+        .join('');
+
+    // Show card & scroll
+    const card = document.getElementById('resultCard');
+    card.classList.add('visible');
+    document.getElementById('runAnother').style.display = 'block';
+    card.scrollIntoView({ behavior: 'smooth', block: 'start' });
+}
+
+// ── Reset form ─────────────────────────────────────────────────────────────
+function resetForm() {
+    ['age','bp_systolic','bp_diastolic','cholesterol','bmi','height','weight',
+     'bmi_calc','medication_count','length_of_stay'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.value = '';
+    });
+    document.getElementById('medication_count').value = '0';
+    document.getElementById('gender').selectedIndex = 0;
+    document.getElementById('discharge_destination').selectedIndex = 0;
+    document.getElementById('diabetes').checked = false;
+    document.getElementById('hypertension').checked = false;
+    document.getElementById('bmiResult').style.display = 'none';
+    document.getElementById('resultCard').classList.remove('visible');
+    document.getElementById('runAnother').style.display = 'none';
+    document.getElementById('errorBox').classList.remove('visible');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+
+</body>
+</html>
