@@ -387,7 +387,7 @@ select option { color: #1a2e2a; background: white; }
     <!-- Form header -->
     <div class="breadcrumb">Clinical Dashboard › <b>Intake Form</b></div>
     <h1 class="assess-title">Patient Risk Assessment</h1>
-    <p class="assess-sub">Input the clinical data required for predictive modeling. Ensure accuracy in biometrics for high-precision risk stratification.</p>
+    <p class="assess-sub">Input the clinical data required for predictive modeling. The system only accepts clinically plausible values to reduce invalid or anomalous test inputs.</p>
 
     <div class="assess-grid">
         <!-- LEFT: Form -->
@@ -401,7 +401,7 @@ select option { color: #1a2e2a; background: white; }
                 <div class="form-row col-2">
                     <div class="form-group">
                         <label>Age</label>
-                        <input type="number" id="age" min="0" max="120" placeholder="e.g. 45">
+                        <input type="number" id="age" min="18" max="100" placeholder="e.g. 45">
                     </div>
                     <div class="form-group">
                         <label>Gender</label>
@@ -423,15 +423,15 @@ select option { color: #1a2e2a; background: white; }
                 <div class="form-row col-3">
                     <div class="form-group">
                         <label>BP Systolic (mmHg)</label>
-                        <input type="number" id="bp_systolic" min="0" max="300" placeholder="e.g. 120">
+                        <input type="number" id="bp_systolic" min="70" max="250" placeholder="e.g. 120">
                     </div>
                     <div class="form-group">
                         <label>BP Diastolic (mmHg)</label>
-                        <input type="number" id="bp_diastolic" min="0" max="200" placeholder="e.g. 80">
+                        <input type="number" id="bp_diastolic" min="40" max="150" placeholder="e.g. 80">
                     </div>
                     <div class="form-group">
                         <label>Cholesterol (mg/dL)</label>
-                        <input type="number" id="cholesterol" min="0" max="600" placeholder="e.g. 190">
+                        <input type="number" id="cholesterol" min="80" max="400" placeholder="e.g. 190">
                     </div>
                 </div>
 
@@ -444,18 +444,18 @@ select option { color: #1a2e2a; background: white; }
                     </div>
 
                     <div class="bmi-panel active" id="bmi-direct">
-                        <input type="number" id="bmi" min="0" max="80" step="0.1" placeholder="e.g. 24.5">
+                        <input type="number" id="bmi" min="12" max="60" step="0.1" placeholder="e.g. 24.5">
                     </div>
 
                     <div class="bmi-panel" id="bmi-calc">
                         <div class="form-row col-2" style="margin-bottom:0">
                             <div class="form-group">
                                 <label>Height (cm)</label>
-                                <input type="number" id="height" min="50" max="250" step="0.1" placeholder="e.g. 170" oninput="calcBMI()">
+                                <input type="number" id="height" min="120" max="220" step="0.1" placeholder="e.g. 170" oninput="calcBMI()">
                             </div>
                             <div class="form-group">
                                 <label>Weight (kg)</label>
-                                <input type="number" id="weight" min="10" max="300" step="0.1" placeholder="e.g. 70" oninput="calcBMI()">
+                                <input type="number" id="weight" min="30" max="250" step="0.1" placeholder="e.g. 70" oninput="calcBMI()">
                             </div>
                         </div>
                         <div class="bmi-computed" id="bmiResult" style="display:none;"></div>
@@ -489,11 +489,11 @@ select option { color: #1a2e2a; background: white; }
                 <div class="form-row col-3">
                     <div class="form-group">
                         <label>Medication Count</label>
-                        <input type="number" id="medication_count" min="0" max="50" value="0">
+                        <input type="number" id="medication_count" min="0" max="30" value="0">
                     </div>
                     <div class="form-group">
                         <label>Length of Stay (Days)</label>
-                        <input type="number" id="length_of_stay" min="0" max="365" placeholder="e.g. 5">
+                        <input type="number" id="length_of_stay" min="1" max="90" placeholder="e.g. 5">
                     </div>
                     <div class="form-group">
                         <label>Discharge Destination</label>
@@ -537,13 +537,11 @@ select option { color: #1a2e2a; background: white; }
         <div class="ft-logo">MedPredict</div>
         <div class="ft-tag">Precision AI for clinical decision support.</div>
     </div>
-    {% if page == "home" %}
     <div class="ft-links">
         <a class="ft-link" href="#">Documentation</a>
         <a class="ft-link" href="#">Privacy Policy</a>
         <a class="ft-link" href="#">Terms of Service</a>
     </div>
-    {% endif %}
     <div class="ft-copy">© 2026 MedPredict. All rights reserved.</div>
 </footer>
 
@@ -619,6 +617,61 @@ async function submitForm() {
         return;
     }
 
+    // Logical clinical validation to prevent medically implausible values
+    const age = parseFloat(fields.age);
+    const systolic = parseFloat(fields.bp_systolic);
+    const diastolic = parseFloat(fields.bp_diastolic);
+    const cholesterol = parseFloat(fields.cholesterol);
+    const bmi = parseFloat(fields.bmi);
+    const medicationCount = parseInt(fields.medication_count);
+    const lengthOfStay = parseFloat(fields.length_of_stay);
+    const pulsePressure = systolic - diastolic;
+
+    const logicalErrors = [];
+
+    if (age < 18 || age > 100) {
+        logicalErrors.push("Age must be between 18 and 100 years.");
+    }
+
+    if (systolic < 70 || systolic > 250) {
+        logicalErrors.push("Systolic blood pressure must be between 70 and 250 mmHg.");
+    }
+
+    if (diastolic < 40 || diastolic > 150) {
+        logicalErrors.push("Diastolic blood pressure must be between 40 and 150 mmHg.");
+    }
+
+    if (systolic <= diastolic) {
+        logicalErrors.push("Systolic blood pressure must be higher than diastolic blood pressure.");
+    }
+
+    if (pulsePressure < 20 || pulsePressure > 120) {
+        logicalErrors.push("Pulse pressure must be clinically reasonable, between 20 and 120 mmHg.");
+    }
+
+    if (cholesterol < 80 || cholesterol > 400) {
+        logicalErrors.push("Cholesterol must be between 80 and 400 mg/dL.");
+    }
+
+    if (bmi < 12 || bmi > 60) {
+        logicalErrors.push("BMI must be between 12 and 60 kg/m².");
+    }
+
+    if (medicationCount < 0 || medicationCount > 30) {
+        logicalErrors.push("Medication count must be between 0 and 30.");
+    }
+
+    if (lengthOfStay < 1 || lengthOfStay > 90) {
+        logicalErrors.push("Length of stay must be between 1 and 90 days.");
+    }
+
+    if (logicalErrors.length > 0) {
+        errorBox.innerHTML = "⚠️ Invalid clinical input:<br>" + logicalErrors.join("<br>");
+        errorBox.classList.add('visible');
+        errorBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        return;
+    }
+
     // Show spinner
     document.getElementById('spinner').classList.add('visible');
     document.getElementById('resultCard').classList.remove('visible');
@@ -630,7 +683,20 @@ async function submitForm() {
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(fields),
         });
-        const data = await res.json();
+
+        const text = await res.text();
+        let data;
+
+        try {
+            data = JSON.parse(text);
+        } catch (e) {
+            throw new Error("Server did not return JSON. Please check the backend or deployment logs.");
+        }
+
+        if (!res.ok) {
+            throw new Error(data.error || "Prediction request failed.");
+        }
+
         if (data.error) throw new Error(data.error);
 
         showResult(data, fields);
